@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dispatch Desk · Churn Risk Check</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="board">
+
+    <!-- ===== Header / status bar ===== -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__dot" id="status-dot"></span>
+        <span class="topbar__title">DISPATCH DESK</span>
+        <span class="topbar__subtitle">Churn Risk Check</span>
+      </div>
+      <div class="topbar__status" id="status-text">connecting to API&hellip;</div>
+    </header>
+
+    <main class="deck">
+
+      <!-- ===== Left: order intake clipboard ===== -->
+      <section class="clipboard" aria-labelledby="intake-heading">
+        <div class="clipboard__clip" aria-hidden="true"></div>
+
+        <h1 id="intake-heading" class="clipboard__title">Order Intake</h1>
+        <p class="clipboard__hint">Fill in the customer's profile and survey answers, then run the check.</p>
+
+        <div class="field-group">
+          <label class="field-label" for="occupation">Occupation</label>
+          <select id="occupation" class="select"></select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="income">Monthly income</label>
+          <select id="income" class="select"></select>
+        </div>
+
+        <h2 class="clipboard__section">Survey Responses</h2>
+        <p class="clipboard__hint clipboard__hint--tight">
+          How much does the customer agree with each statement?
+        </p>
+
+        <div class="scale-legend" aria-hidden="true">
+          <span class="scale-legend__item"><b>SA</b>Strongly agree</span>
+          <span class="scale-legend__item"><b>A</b>Agree</span>
+          <span class="scale-legend__item"><b>N</b>Neutral</span>
+          <span class="scale-legend__item"><b>D</b>Disagree</span>
+          <span class="scale-legend__item"><b>SD</b>Strongly disagree</span>
+        </div>
+
+        <div id="rating-rows" class="rating-rows"></div>
+
+        <button id="run-check" class="run-btn" type="button">
+          Run risk check <span class="run-btn__arrow">&rarr;</span>
+        </button>
+
+        <p id="form-error" class="form-error" hidden></p>
+      </section>
+
+      <!-- ===== Right: printer slot / receipt ===== -->
+      <section class="slot" aria-live="polite">
+        <div class="slot__idle" id="slot-idle">
+          <div class="slot__slit"></div>
+          <p class="slot__idle-text">No ticket printed yet.<br />Run a risk check to print one.</p>
+        </div>
+
+        <div class="receipt" id="receipt" hidden>
+          <div class="receipt__tear" aria-hidden="true"></div>
+
+          <div class="receipt__body">
+            <p class="receipt__brand">DISPATCH DESK</p>
+            <p class="receipt__title">CHURN RISK TICKET</p>
+            <p class="receipt__ticket-no" id="ticket-no">#000000</p>
+            <div class="receipt__rule"></div>
+
+            <div class="receipt__table" id="receipt-table"></div>
+
+            <div class="receipt__rule"></div>
+
+            <div class="receipt__result">
+              <div class="gauge" id="gauge">
+                <svg viewBox="0 0 120 120" width="100" height="100">
+                  <circle class="gauge__track" cx="60" cy="60" r="52"></circle>
+                  <circle class="gauge__fill" id="gauge-fill" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="gauge__label">
+                  <span id="gauge-value">0%</span>
+                  <span class="gauge__caption">churn risk</span>
+                </div>
+              </div>
+
+              <div class="receipt__verdict">
+                <p class="receipt__risk-level" id="risk-level">&mdash;</p>
+                <p class="receipt__demo-note" id="demo-note" hidden>
+                  ⚠ served by rule-based demo fallback — no trained model found
+                </p>
+              </div>
+            </div>
+
+            <div class="receipt__rule"></div>
+            <div class="receipt__barcode" id="barcode" aria-hidden="true"></div>
+            <p class="receipt__footer">THANK YOU — RETAIN FOR RETENTION FOLLOW-UP</p>
+          </div>
+
+          <div class="stamp" id="stamp">LOYAL</div>
+        </div>
+
+        <div class="slot__error" id="slot-error" hidden>
+          <p><strong>No connection to the API.</strong></p>
+          <p id="slot-error-detail">
+            Start the backend (<code>uvicorn app.main:app --reload --port 8000</code>)
+            and refresh this page.
+          </p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <span id="footer-api-base"></span>
+      <span class="footer__sep">·</span>
+      <span>Model: Logistic Regression (trained in <code>Churn_Prediction.ipynb</code>)</span>
+    </footer>
+
+  </div>
+
+<script>
+  // Local dev -> talk to localhost:8000. Anywhere else (once deployed) ->
+  // talk to the deployed backend. Replace the placeholder URL below once
+  // you've deployed the backend (see README.md -> Deployment).
+  window.CHURN_API_BASE =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8000"
+      : "https://REPLACE-WITH-YOUR-BACKEND-URL.onrender.com";
+</script>
+<script src="script.js"></script>
+</body>
+</html>

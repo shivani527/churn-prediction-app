@@ -1,0 +1,17 @@
+# Render "Blueprint" — lets Render provision the backend automatically
+# from this repo (New + -> Blueprint -> point at your repo).
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: churn-prediction-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: "*"
+        # After deploying the frontend, tighten this to its real origin, e.g.:
+        # value: "https://your-frontend.netlify.app"
+    healthCheckPath: /health

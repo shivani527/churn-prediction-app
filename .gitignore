@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Model artifacts (drop your own trained files in backend/model/)
+backend/model/*.pkl
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+.idea/
